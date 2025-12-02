@@ -173,4 +173,5 @@ El proyecto demuestra:
 
 ## 9. Autor
 
-Nicolás Giovannoni
+[Nicolás Giovannoni](https://www.linkedin.com/in/nicolas-giovannoni2806/)
+
