@@ -122,6 +122,7 @@ SELECT
     e.ANIO,
     e.MES,
     e.NOMBRE_MES,
+    TO_DATE(TO_VARCHAR(e.ANIO) || '-' || LPAD(e.MES, 2, '0') || '-01') AS FECHA_MES,
     e.ID_AGENCIA,
     e.NOMBRE_AGENCIA,
     e.REGION,
