@@ -61,7 +61,10 @@ Este trabajo replica una prueba técnica típica donde se evalúa:
 ![Dashboard Ejecutivo](images/dashboard_p1.png)
 
 ### Página 2
-![Calidad Operativa](images/dashboard_p2.png)
+![Dashboard Ejecutivo](images/dashboard_p2.png)
+
+### Página 3
+![Dashboard Ejecutivo](images/dashboard_p3.png)
 
 ### Archivos .csv
 
