@@ -37,32 +37,44 @@ Componentes:
 ## 3. Modelo de Datos (Esquema Estrella)
 
 Dimensiones:
+
 - DIM_TIEMPO → Año, mes, nombre del mes, fecha
 - DIM_AGENCIA → Agencia, región
 - DIM_OPERACION → Operación, saldo inicial, saldo actual, tramo y tipo de cartera
 
 Hechos:
+
 - FACT_GESTION → resultado de gestión, contactos, promesas
 - FACT_PAGO → montos pagados por operación
   
 ## 4. Ingesta de Datos
 
 4.1 Creación del Stage:
+
+```sql
 CREATE STAGE IF NOT EXISTS STG_RECUPERO
   FILE_FORMAT = (TYPE = 'CSV' FIELD_DELIMITER = ',' SKIP_HEADER = 1);
+```
 
 4.2 Carga de archivos CSV:
+
+
 PUT file://stg_recupero/*.csv @STG_RECUPERO;
 LIST @STG_RECUPERO;
 
 4.3 Carga a tablas:
+
+```sql
 COPY INTO DIM_AGENCIA
 FROM @STG_RECUPERO/dim_agencia.csv
 FILE_FORMAT=(TYPE='CSV' SKIP_HEADER=1);
+```
 
 ## 5. Transformaciones y Vistas Analíticas
 
 ### 5.1 Vista de stock por agencia:
+
+```sql
 CREATE OR REPLACE VIEW VW_STOCK_AGENCIA AS
 SELECT
     o.ID_AGENCIA,
@@ -73,8 +85,11 @@ SELECT
 FROM DIM_OPERACION o
 JOIN DIM_AGENCIA a ON o.ID_AGENCIA = a.ID_AGENCIA
 GROUP BY 1,2,3;
+```
 
 ### 5.2 Vista de recupero mensual:
+
+```sql
 CREATE OR REPLACE VIEW VW_RECUPERO_MENSUAL_AGENCIA AS
 SELECT
     t.ANIO,
@@ -89,10 +104,12 @@ JOIN DIM_OPERACION o ON p.ID_OPERACION = o.ID_OPERACION
 JOIN DIM_TIEMPO t ON p.ID_TIEMPO = t.ID_TIEMPO
 JOIN DIM_AGENCIA a ON o.ID_AGENCIA = a.ID_AGENCIA
 GROUP BY 1,2,3,4,5,6;
+```
 
 ### 5.3 Vista de gestiones mensuales:
 Incluye totales, contactos, promesas, contactabilidad y % de promesas.
 
+```sql
 CREATE OR REPLACE VIEW VW_GESTIONES_MENSUAL_AGENCIA AS
 SELECT
     t.ANIO,
@@ -115,8 +132,11 @@ JOIN DIM_OPERACION o ON g.ID_OPERACION = o.ID_OPERACION
 JOIN DIM_TIEMPO t ON g.ID_TIEMPO = t.ID_TIEMPO
 JOIN DIM_AGENCIA a ON o.ID_AGENCIA = a.ID_AGENCIA
 GROUP BY 1,2,3,4,5,6;
+```
 
 ### 5.4 Vista final para BI (dashboard):
+
+```sql
 CREATE OR REPLACE VIEW VW_DASH_AGENCIA_MENSUAL AS
 SELECT
     e.ANIO,
@@ -138,6 +158,7 @@ SELECT
 FROM VW_EFICIENCIA_MENSUAL_AGENCIA e
 LEFT JOIN VW_GESTIONES_MENSUAL_AGENCIA g
   ON e.ANIO = g.ANIO AND e.MES = g.MES AND e.ID_AGENCIA = g.ID_AGENCIA;
+```
 
 ## 6. Dashboards en Looker Studio
 
